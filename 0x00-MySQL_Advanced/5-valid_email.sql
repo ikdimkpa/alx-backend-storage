@@ -1,0 +1,16 @@
+-- creates a trigger that decreases the quantity
+-- of an item after adding a new order.
+
+DROP TRIGGER IF EXISTS validate_email;
+
+DELIMITER $$
+CREATE TRIGGER validate_email
+BEFORE UPDATE
+ON users
+FOR EACH ROW
+BEGIN
+	IF NEW.email == OLD.email THEN
+		SET NEW.valid_email = 1;
+	END IF;
+END$$
+DELIMETER ;
