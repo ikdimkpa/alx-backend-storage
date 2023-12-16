@@ -10,7 +10,6 @@ CREATE PROCEDURE AddBonus(
 BEGIN
 	INSERT INTO projects (name)
 	SELECT project_name
-	-- WHERE NOT EXISTS (SELECT * FROM projects WHERE name=project_name LIMIT 1);
 	WHERE project_name NOT IN (SELECT name FROM projects);
 
 	INSERT INTO corrections (user_id, project_id, score)
