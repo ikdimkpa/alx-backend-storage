@@ -3,9 +3,9 @@
 DELIMITER $$
 DROP PROCEDURE IF EXISTS AddBonus;
 CREATE PROCEDURE AddBonus(
-	IN `user_id` INTEGER,
-	IN `project_name` VARCHAR(255),
-	IN `score` INTEGER
+	IN user_id INTEGER,
+	IN project_name VARCHAR(255),
+	IN score INTEGER
 )
 BEGIN
 	INSERT INTO projects (name)
