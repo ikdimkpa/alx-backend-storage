@@ -1,46 +1,45 @@
 #!/usr/bin/env python3
-"""Python script that provides some stats about Nginx logs stored in MongoDB"""
+""" MongoDB Operations with Python using pymongo """
 from pymongo import MongoClient
 
 if __name__ == "__main__":
-   client = MongoClient("mongodb://localhost:27017")
-   db = client.logs
-   col = db.nginx
+    """ Provides some stats about Nginx logs stored in MongoDB """
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    nginx_collection = client.logs.nginx
 
-   # getting the methods and count for each
-   logs_count = col.count_documents({})
+    n_logs = nginx_collection.count_documents({})
+    print(f'{n_logs} logs')
 
-   print(f"{logs_count} logs\nMethods:")
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    print('Methods:')
+    for method in methods:
+        count = nginx_collection.count_documents({"method": method})
+        print(f'\tmethod {method}: {count}')
+    
+    status_check = nginx_collection.count_documents(
+            {"method": "GET", "path": "/status"}
+    )
 
-   methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    print(f'{status_check} status check')
 
-   for method in methods:
-       method_count = col.count_documents({"method": method})
-       print(f'\tmethod {method}: {method_count}')
-
-   get_status_count = col.count_documents({'method': 'GET',
-       'path': '/status'})
-
-   print(f"{get_status_count} status check\nIPs:")
-   # adding the top 10 of the most present IPs
-   group_stage = {
-           "$group": {
-               "__id": "$ip",
-               "count": {"$sum": 1}
-               }
+    top_ips = nginx_collection.aggregate([
+        {"$group":
+            {
+                "_id": "$ip",
+                "count": {"$sum": 1}
             }
-  
-   sort_stage = {
-           "$sort": {"count": -1}
-           }
-   
-   limit_stage = {
-           "$limit": 10
-           }
+        },
+        {"$sort": {"count": -1}},
+        {"$limit": 10},
+        {"$project": {
+            "_id": 0,
+            "ip": "$_id",
+            "count": 1
+        }}
+    ])
 
-   pipeline = [group_stage, sort_stage, limit_stage]
-
-   result = col.aggregate(pipeline)
-
-    for row in result:
-        print(f"\t{row['_id']}: {row['count']}")
+    print("IPs:")
+    for top_ip in top_ips:
+        ip = top_ip.get("ip")
+        count = top_ip.get("count")
+        print(f'\t{ip}: {count}')
