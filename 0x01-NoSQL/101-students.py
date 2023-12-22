@@ -4,15 +4,16 @@
    sorted by average score
 """
 
-
 def top_students(mongo_collection):
-    """Returns all students sorted by average score"""
-    topStudent = mongo_collection.aggregate([
-            {
-                "projects": {
-                    "name": "$name",
-                    "averageScore": {"$avg": "$topics.score"}
-                    }
-                },
-            {"$sort": "$avgerageScore": -1}
+    # sourcery skip: inline-immediately-returned-variable
+    """ Returns all students sorted by average score """
+    top_student = mongo_collection.aggregate([
+        {
+            "$project": {
+                "name": "$name",
+                "averageScore": {"$avg": "$topics.score"}
+                }
+            },
+        {"$sort": {"averageScore": -1}}
     ])
+    return top_student
