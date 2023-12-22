@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 """Creates function that  lists all documents in a collection"""
 
 
