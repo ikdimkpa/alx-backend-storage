@@ -7,8 +7,6 @@ having a specific topic.
 
 def schools_by_topic(mongo_collection, topic):
     """Returns the list of school having a specific topic."""
-    schools = []
-    for schoool in mongo_collection.find({"topic": topic}):
-        schools.append(school)
+    docs = mongo_collection.find({"topic": topic})
     
-    return schools
+    return list(docs)
